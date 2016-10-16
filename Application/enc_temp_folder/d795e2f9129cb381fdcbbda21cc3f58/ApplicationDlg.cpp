@@ -33,8 +33,8 @@ namespace {
 				pBitmap->GetPixel(x, y, &color);
 				Red[color.GetRed()]++;
 				Green[color.GetGreen()]++;
-				Bright[color.GetAlpha()]++;
 				Blue[color.GetBlue()]++;
+				Bright[color.GetAlpha()]++;
 			}
 		}
 	}
