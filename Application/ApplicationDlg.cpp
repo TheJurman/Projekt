@@ -31,10 +31,10 @@ namespace {
 			{
 				Gdiplus::Color color;
 				pBitmap->GetPixel(x, y, &color);
-				Red[color.GetRed()]++;
 				Green[color.GetGreen()]++;
 				Bright[color.GetAlpha()]++;
 				Blue[color.GetBlue()]++;
+				Red[color.GetRed()]++;
 			}
 		}
 	}
@@ -294,11 +294,37 @@ LRESULT CApplicationDlg::OnDrawHistogram(WPARAM wParam, LPARAM lParam)
 	CDC * pDC = CDC::FromHandle(lpDI->hDC);
 
 	pDC->FillSolidRect(&(lpDI->rcItem), RGB(255, 255, 255));
+	if (m_vHistRed.size()== 0) return S_OK;
+
+	int right = lpDI->rcItem.right;
+	int left = lpDI->rcItem.left;
+	int top = lpDI->rcItem.top;
+	int bottom = lpDI->rcItem.bottom;
+	int width = right - left;
+	int height = abs(top - bottom);
+	double ScalX= double(width) / 256.;
+	
+	int m_max = 0;
+	for (int x = 0; x < (int)m_vHistRed.size(); x++) {
+		if (m_vHistRed[x] > m_max)m_max = m_vHistRed[x];
+	}
+
+	double ScalY = double(height)/double(log(m_max));
+
+	
+
+	for (int x = 0; x < (int)m_vHistRed.size(); x++) {
+		double dHeight = (double)(log(m_vHistRed[x])) * (double)ScalY;
+		CRect Rectangle(ScalX*x, bottom - dHeight, ScalX*x+1, bottom);
+		pDC->FillSolidRect(Rectangle, RGB(255, 0, 0));
+	}
 
 	CBrush brBlack(RGB(0, 0, 0));
 	pDC->FrameRect(&(lpDI->rcItem), &brBlack);
 
 	return S_OK;
+
+	
 }
 
 LRESULT CApplicationDlg::OnDrawImage(WPARAM wParam, LPARAM lParam)
